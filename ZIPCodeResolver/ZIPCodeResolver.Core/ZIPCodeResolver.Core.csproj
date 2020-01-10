@@ -44,7 +44,11 @@
     <Compile Include="ICityService.cs" />
     <Compile Include="IConfigurationService.cs" />
     <Compile Include="Models\City.cs" />
+    <Compile Include="Models\CityResponse.cs" />
+    <Compile Include="Models\ExtendedCityResponse.cs" />
+    <Compile Include="Models\ICityResponse.cs" />
     <Compile Include="Models\Location.cs" />
+    <Compile Include="Models\SelectionInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

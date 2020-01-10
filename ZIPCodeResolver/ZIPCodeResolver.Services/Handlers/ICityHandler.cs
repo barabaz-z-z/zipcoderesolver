@@ -9,7 +9,7 @@ namespace ZIPCodeResolver.Services.Handlers
 {
     public interface ICityHandler
     {
-        Task<City> Handle(City city);
+        Task<ICityResponse> Handle(ICityResponse city);
         ICityHandler SetNext(ICityHandler handler);
     }
 }

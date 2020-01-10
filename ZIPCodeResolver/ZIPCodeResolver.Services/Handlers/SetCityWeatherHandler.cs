@@ -22,21 +22,21 @@ namespace ZIPCodeResolver.Services.Handlers
             _httpClient = new HttpClient();
         }
 
-        public override async Task<City> Handle(City city)
+        public override async Task<ICityResponse> Handle(ICityResponse response)
         {
             try
             {
                 var host = _configuration.GetValue("OpenWeatherMapAPIHost");
-                var query = $"lat={city.Location.Latitude}&lon={city.Location.Longitude}";
+                var query = $"lat={response.City.Location.Latitude}&lon={response.City.Location.Longitude}";
                 var key = _configuration.GetValue("OpenWeatherMapAPIKey");
                 var result = await _httpClient.GetStringAsync($"{host}?{query}&appid={key}&units=metric");
                 var rootObject = JsonConvert.DeserializeObject<RootObject>(result);
 
-                city.Temperature = rootObject.Main.Temp;
+                response.City.Temperature = rootObject.Main.Temp;
             }
             catch { }
 
-            return await base.Handle(city);
+            return await base.Handle(response);
         }
 
         public class Main

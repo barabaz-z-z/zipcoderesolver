@@ -23,11 +23,11 @@ namespace ZIPCodeResolver.Services.Handlers
             _httpClient = new HttpClient();
         }
 
-        public override async Task<City> Handle(City city)
+        public override async Task<ICityResponse> Handle(ICityResponse response)
         {
             try
             {
-                var query = $"place_id={city.Id}";
+                var query = $"place_id={response.City.Id}";
                 var uriHelper = new GoogleUriHelper(_configurationService);
                 var result = await _httpClient.GetStringAsync(uriHelper.GetUri(GoogleServiceTypes.Geocode, query));
 
@@ -36,7 +36,7 @@ namespace ZIPCodeResolver.Services.Handlers
                 if (rootObject.Status == GoogleAPIStatuses.OK)
                 {
                     var location = rootObject.Results.First().Geometry.Location;
-                    city.Location = new Core.Models.Location
+                    response.City.Location = new Core.Models.Location
                     {
                         Latitude = location.Lat,
                         Longitude = location.Lng
@@ -45,7 +45,7 @@ namespace ZIPCodeResolver.Services.Handlers
             }
             catch { }
 
-            return await base.Handle(city);
+            return await base.Handle(response);
         }
 
         private class Location

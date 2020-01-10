@@ -9,6 +9,6 @@ namespace ZIPCodeResolver.Core
 {
     public interface ICityService
     {
-        Task<City> GetCityAsync(string postalCode);
+        Task<ICityResponse> GetCityResponseAsync(string postalCode);
     }
 }

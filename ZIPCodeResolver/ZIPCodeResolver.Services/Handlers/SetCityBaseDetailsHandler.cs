@@ -23,26 +23,36 @@ namespace ZIPCodeResolver.Services.Handlers
             _httpClient = new HttpClient();
         }
 
-        public override async Task<City> Handle(City city)
+        public override async Task<ICityResponse> Handle(ICityResponse response)
         {
-            if (String.IsNullOrEmpty(city.PostalCode))
+            if (String.IsNullOrEmpty(response.City.PostalCode))
             {
-                throw new ArgumentException($"Argument {nameof(city)} has to contain certain {nameof(City.PostalCode)} value");
+                throw new Exception($"{nameof(City.PostalCode)} is not provided. Pass postal code as part of url path");
             }
 
-            var query = $"input={city.PostalCode}&types=(regions)";
+            int predictionsNumber = 0;
+            var query = $"input={response.City.PostalCode}&types=(regions)";
             var uriHelper = new GoogleUriHelper(_configurationService);
             var result = await _httpClient.GetStringAsync(uriHelper.GetUri(GoogleServiceTypes.Place, query));
             var rootObject = JsonConvert.DeserializeObject<RootObject>(result);
 
             if (rootObject.Status == GoogleAPIStatuses.OK)
             {
+                predictionsNumber = rootObject.Predictions.Count();
                 var predition = rootObject.Predictions.First();
-                city.Id = predition.Reference;
-                city.Name = predition.Description;
+                response.City.Id = predition.Reference;
+                response.City.Name = predition.Description;
             }
 
-            return await base.Handle(city);
+            var handledResponse = await base.Handle(response);
+            return new ExtendedCityResponse
+            {
+                City = handledResponse.City,
+                SelectionInfo = new SelectionInfo
+                {
+                    Count = predictionsNumber
+                }
+            };
         }
 
         private class Prediction

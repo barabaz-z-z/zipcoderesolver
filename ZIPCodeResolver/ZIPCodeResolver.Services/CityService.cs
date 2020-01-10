@@ -30,11 +30,18 @@ namespace ZIPCodeResolver.Services
             setCityTimeZoneHandler.SetNext(setCityWeatherHandler);
         }
 
-        public async Task<City> GetCityAsync(string postalCode)
+        public async Task<ICityResponse> GetCityResponseAsync(string postalCode)
         {
-            var city = await _cityHandler.Handle(new City { PostalCode = postalCode });
+            var response = new CityResponse
+            {
+                City = new City
+                {
+                    PostalCode = postalCode
+                }
+            };
+            var result = await _cityHandler.Handle(response);
 
-            return city;
+            return result;
         }
     }
 }

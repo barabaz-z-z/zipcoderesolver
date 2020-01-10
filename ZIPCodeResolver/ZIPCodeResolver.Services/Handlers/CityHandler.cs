@@ -11,14 +11,14 @@ namespace ZIPCodeResolver.Services.Handlers
     {
         private ICityHandler _cityHandler;
 
-        public virtual async Task<City> Handle(City city)
+        public virtual async Task<ICityResponse> Handle(ICityResponse response)
         {
             if (_cityHandler != null)
             {
-                return await _cityHandler.Handle(city);
+                return await _cityHandler.Handle(response);
             }
 
-            return city;
+            return response;
         }
 
         public ICityHandler SetNext(ICityHandler handler)

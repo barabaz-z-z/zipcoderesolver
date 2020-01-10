@@ -23,12 +23,12 @@ namespace ZIPCodeResolver.Services.Handlers
             _httpClient = new HttpClient();
         }
 
-        public override async Task<City> Handle(City city)
+        public override async Task<ICityResponse> Handle(ICityResponse response)
         {
             try
             {
                 var timestamp = DateTime.Now.Millisecond;
-                var query = $"location={city.Location.Latitude},{city.Location.Longitude}&timestamp={timestamp}";
+                var query = $"location={response.City.Location.Latitude},{response.City.Location.Longitude}&timestamp={timestamp}";
                 var uriHelper = new GoogleUriHelper(_configurationService);
                 var result = await _httpClient.GetStringAsync(uriHelper.GetUri(GoogleServiceTypes.Timezone, query));
 
@@ -36,12 +36,12 @@ namespace ZIPCodeResolver.Services.Handlers
 
                 if (rootObject.Status == GoogleAPIStatuses.OK)
                 {
-                    city.TimeZoneName = rootObject.TimeZoneName;
+                    response.City.TimeZoneName = rootObject.TimeZoneName;
                 }
             }
             catch { }
 
-            return await base.Handle(city);
+            return await base.Handle(response);
         }
 
         private class RootObject
