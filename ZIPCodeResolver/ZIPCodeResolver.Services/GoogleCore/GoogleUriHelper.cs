@@ -2,13 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using ZIPCodeResolver.Core;
 
 namespace ZIPCodeResolver.Services.GoogleCore
 {
-    public static class GoogleUriHelper
+    public sealed class GoogleUriHelper
     {
-        public static string GetUri(GoogleServiceTypes type, string query)
+        private readonly IConfigurationService _configurationService;
+
+        public GoogleUriHelper(IConfigurationService configurationService)
+        {
+            _configurationService = configurationService;
+        }
+
+        public string GetUri(GoogleServiceTypes type, string query)
         {
             string serviceType;
             switch (type)
@@ -27,7 +34,10 @@ namespace ZIPCodeResolver.Services.GoogleCore
                     break;
             }
 
-            return $"{GoogleContants.APIHost}/{serviceType}/{GoogleContants.Format}?key={GoogleContants.APIKey}&{query}";
+            var host = _configurationService.GetValue("GoogleAPIHost");
+            var key = _configurationService.GetValue("GoogleAPIKey");
+
+            return $"{host}/{serviceType}/{GoogleContants.Format}?key={key}&{query}";
         }
     }
 }

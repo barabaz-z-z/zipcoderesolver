@@ -13,17 +13,23 @@ namespace ZIPCodeResolver.Services.Handlers
 {
     public sealed class SetCityLocationHandler : CityHandler
     {
-        private HttpClient _httpClient = new HttpClient();
+        private readonly IConfigurationService _configurationService;
+        private readonly HttpClient _httpClient;
 
-        public SetCityLocationHandler(IConfigurationService configurationService) : base(configurationService)
+        public SetCityLocationHandler(IConfigurationService configurationService)
+            : base()
         {
+            _configurationService = configurationService;
+            _httpClient = new HttpClient();
         }
 
-        public override async Task Handle(City city)
+        public override async Task<City> Handle(City city)
         {
             try
             {
-                var result = await _httpClient.GetStringAsync($"{GoogleContants.APIHost}/geocode/{GoogleContants.Format}?place_id={city.Id}&key={GoogleContants.APIKey}");
+                var query = $"place_id={city.Id}";
+                var uriHelper = new GoogleUriHelper(_configurationService);
+                var result = await _httpClient.GetStringAsync(uriHelper.GetUri(GoogleServiceTypes.Geocode, query));
 
                 var rootObject = JsonConvert.DeserializeObject<RootObject>(result);
 
@@ -37,10 +43,9 @@ namespace ZIPCodeResolver.Services.Handlers
                     };
                 }
             }
-            finally
-            {
-                await base.Handle(city);
-            }
+            catch { }
+
+            return await base.Handle(city);
         }
 
         private class Location

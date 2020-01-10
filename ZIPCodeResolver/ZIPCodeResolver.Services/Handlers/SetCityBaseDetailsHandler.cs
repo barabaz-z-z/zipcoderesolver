@@ -13,13 +13,17 @@ namespace ZIPCodeResolver.Services.Handlers
 {
     public sealed class SetCityBaseDetailsHandler : CityHandler
     {
-        private HttpClient _httpClient = new HttpClient();
+        private readonly IConfigurationService _configurationService;
+        private readonly HttpClient _httpClient;
 
-        public SetCityBaseDetailsHandler(IConfigurationService configurationService) : base(configurationService)
+        public SetCityBaseDetailsHandler(IConfigurationService configurationService)
+            : base()
         {
+            _configurationService = configurationService;
+            _httpClient = new HttpClient();
         }
 
-        public override async Task Handle(City city)
+        public override async Task<City> Handle(City city)
         {
             if (String.IsNullOrEmpty(city.PostalCode))
             {
@@ -27,8 +31,8 @@ namespace ZIPCodeResolver.Services.Handlers
             }
 
             var query = $"input={city.PostalCode}&types=(regions)";
-            var result = await _httpClient.GetStringAsync(GoogleUriHelper.GetUri(GoogleServiceTypes.Place, query));
-
+            var uriHelper = new GoogleUriHelper(_configurationService);
+            var result = await _httpClient.GetStringAsync(uriHelper.GetUri(GoogleServiceTypes.Place, query));
             var rootObject = JsonConvert.DeserializeObject<RootObject>(result);
 
             if (rootObject.Status == GoogleAPIStatuses.OK)
@@ -36,9 +40,9 @@ namespace ZIPCodeResolver.Services.Handlers
                 var predition = rootObject.Predictions.First();
                 city.Id = predition.Reference;
                 city.Name = predition.Description;
-
-                await base.Handle(city);
             }
+
+            return await base.Handle(city);
         }
 
         private class Prediction

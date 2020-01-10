@@ -13,19 +13,24 @@ namespace ZIPCodeResolver.Services.Handlers
 {
     public sealed class SetCityTimeZoneHandler : CityHandler
     {
-        private HttpClient _httpClient = new HttpClient();
+        private readonly IConfigurationService _configurationService;
+        private readonly HttpClient _httpClient;
 
-        public SetCityTimeZoneHandler(IConfigurationService configurationService) : base(configurationService)
+        public SetCityTimeZoneHandler(IConfigurationService configurationService)
+            : base()
         {
+            _configurationService = configurationService;
+            _httpClient = new HttpClient();
         }
 
-        public override async Task Handle(City city)
+        public override async Task<City> Handle(City city)
         {
             try
             {
                 var timestamp = DateTime.Now.Millisecond;
                 var query = $"location={city.Location.Latitude},{city.Location.Longitude}&timestamp={timestamp}";
-                var result = await _httpClient.GetStringAsync(GoogleUriHelper.GetUri(GoogleServiceTypes.Timezone, query));
+                var uriHelper = new GoogleUriHelper(_configurationService);
+                var result = await _httpClient.GetStringAsync(uriHelper.GetUri(GoogleServiceTypes.Timezone, query));
 
                 var rootObject = JsonConvert.DeserializeObject<RootObject>(result);
 
@@ -34,10 +39,9 @@ namespace ZIPCodeResolver.Services.Handlers
                     city.TimeZoneName = rootObject.TimeZoneName;
                 }
             }
-            finally
-            {
-                await base.Handle(city);
-            }
+            catch { }
+
+            return await base.Handle(city);
         }
 
         private class RootObject

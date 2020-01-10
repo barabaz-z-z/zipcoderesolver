@@ -12,9 +12,7 @@ namespace ZIPCodeResolver.API
     {
         public string GetValue(string key)
         {
-            var settings = ConfigurationManager.AppSettings as NameValueCollection;
-
-            return $"Get value and {key}";
+            return ConfigurationManager.AppSettings[key];
         }
     }
 }
