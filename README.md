@@ -6,7 +6,7 @@ Prerequisites:
         **Internet Information Services - World Wide Web Services - Application Development Features**
 
 Steps:
-1. Unzip **zipcoderesolver.zip**
+1. Unzip **zipcoderesolver.zip**. It is located in the root folder of project
 2. Open extracted folder **zipcoderesolver**
 3. Open PowerShell with admin permissions
 3. Run `.\deployer.ps1` in PowerShell
