@@ -40,4 +40,8 @@ Result json:
 }
 ```
 
-
+Enhancements:
+- add unit tests
+- add class for API settings
+- send requests simultiously (currently requests go one after another sake of simplicity)
+- add friendly errors and handling them 
