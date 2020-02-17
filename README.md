@@ -53,4 +53,7 @@ Result json:
 - add unit tests
 - add class for API settings
 - send requests simultiously (currently requests go one after another sake of simplicity)
-- add friendly errors and handling them 
+- add friendly errors and handling them
+
+# Explanation
+I decided API should return data as json rather than in formatted string as pointed out in assignment, because the frontend has to take care about how to show data, not API.
